@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CataNav</string>
+
+    <string name="title_maps">Maps</string>
+    <string name="title_calibration">Step calibration</string>
+    <string name="title_calibrate_map">Calibrate map</string>
+    <string name="title_calibration_test">Calibration test</string>
+    <string name="title_history">Trip history</string>
+    <string name="title_trip_detail">Trip detail</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_anchors">Anchors</string>
+
+    <string name="privacy_note">All trip data stays on this device. CataNav has no network access, no GPS, no analytics.</string>
+
+    <!-- Maps screen -->
+    <string name="import_map">Import map</string>
+    <string name="import_failed">Could not import that file — pick a readable image.</string>
+    <string name="map_calibrated">Calibrated</string>
+    <string name="map_needs_calibration">Needs calibration</string>
+    <string name="map_needs_calibration_message">This map has no calibration yet. Calibrate it (two points + north) before starting a trip.</string>
+    <string name="map_row_meta">%1$s · %2$d trips · %3$d×%4$d px</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_calibrate">Calibrate</string>
+    <string name="action_delete">Delete</string>
+    <string name="delete_map_message">Delete "%1$s" with all its versions, anchors and trips?</string>
+    <string name="map_name_hint">Map name</string>
+    <string name="unnamed_map">Unnamed map</string>
+
+    <!-- Map calibration flow -->
+    <string name="calibrate_pick_a">Step 1/3 — Tap point A on a known feature (zoom in for precision).</string>
+    <string name="calibrate_pick_b">Step 2/3 — Tap point B. You will enter the real A–B distance next.</string>
+    <string name="calibrate_north">Step 3/3 — Rotate the arrow until it points to TRUE NORTH as drawn on the map.</string>
+    <string name="calibrate_next">Next</string>
+    <string name="calibrate_save">Save calibration</string>
+    <string name="calibrate_distance_hint">Real distance A–B (meters)</string>
+    <string name="calibrate_points_too_close">Points are too close together — zoom in and pick two distinct landmarks.</string>
+    <string name="calibrate_saved">Calibration saved: %1$.4f m/px</string>
+
+    <!-- Tracking screen -->
+    <string name="btn_start_trip">Start trip</string>
+    <string name="btn_stop_trip">Stop trip</string>
+    <string name="btn_reanchor">Re-anchor</string>
+    <string name="btn_retrace">Retrace</string>
+    <string name="btn_confirm_anchor">Confirm position</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="anchor_hint">Tap your true position on the map, then confirm.</string>
+    <string name="start_anchor_hint">Tap your starting point on the map to begin the trip.</string>
+    <string name="anchor_name_hint">Anchor name (optional — e.g. "Junction 14")</string>
+    <string name="reanchor_tap_map">Tap position on map…</string>
+    <string name="nav_anchor_unnamed">unnamed anchor</string>
+    <string name="nav_info_line">⚓ %1$s · %2$.0f m since anchor · ±%3$.1f m</string>
+    <string name="no_anchors_yet">No anchors stored for this map yet.</string>
+    <string name="status_manual_mode">Manual mode — no step sensor</string>
+    <string name="status_no_heading">No heading source — navigation unavailable</string>
+    <string name="status_idle">Not tracking</string>
+    <string name="status_heading_line">Heading: %1$s — %2$s</string>
+    <string name="confidence_high">High confidence</string>
+    <string name="confidence_medium">Medium confidence</string>
+    <string name="confidence_low">Low confidence — uncertainty growing faster</string>
+    <string name="confidence_unreliable">Magnetic interference detected</string>
+    <string name="recalibrate_prompt">Compass unreliable. Wave the phone in a figure-8 to recalibrate.</string>
+    <string name="battery_warning">Battery at %1$d%% — about %2$s of tracking left. No charging underground.</string>
+    <string name="facing_prompt">Which way are you facing? (optional)</string>
+    <string name="facing_use_sensor">Use sensor heading</string>
+    <string name="facing_set_manual">Set manually</string>
+    <string name="retrace_on">Retrace: follow the highlighted trail back</string>
+    <string name="retrace_to_anchor">Back to last anchor</string>
+    <string name="retrace_to_start">Back to trip start</string>
+
+    <!-- Manual mode -->
+    <string name="manual_step_forward">Step forward</string>
+    <string name="manual_step_back">Step back</string>
+    <string name="manual_heading_dial">Heading</string>
+
+    <!-- Step calibration (device profile) -->
+    <string name="calibration_intro">Walk a measured straight distance (20–50 m) above ground at your normal pace, then enter the distance.</string>
+    <string name="calibration_start">Start walking</string>
+    <string name="calibration_stop">Stop</string>
+    <string name="calibration_steps_counted">Steps counted: %1$d</string>
+    <string name="calibration_distance_hint">Distance walked (m)</string>
+    <string name="calibration_save">Save step length</string>
+    <string name="calibration_result">Step length: %1$.2f m</string>
+    <string name="calibration_need_steps">Walk first — no steps counted yet.</string>
+
+    <!-- Calibration test (device profile) -->
+    <string name="test_intro">Walk a KNOWN distance, then compare it with the PDR estimate (current step length: %1$.2f m). Results are stored in your device profile.</string>
+    <string name="test_known_distance_hint">Known distance walked (m)</string>
+    <string name="test_evaluate">Evaluate</string>
+    <string name="test_result">PDR estimated %1$.1f m for %2$.1f m walked — error %3$+.1f%%</string>
+    <string name="test_history_title">Test history</string>
+    <string name="test_history_empty">No tests recorded yet.</string>
+
+    <!-- History / detail -->
+    <string name="export_csv">Export CSV</string>
+    <string name="delete_trip">Delete trip</string>
+    <string name="delete_track_only">Delete track points only</string>
+    <string name="delete_all">Delete trip and track</string>
+    <string name="trip_notes_hint">Notes — entrance used, planned route, who knows you\'re down there</string>
+    <string name="trip_on_map">Map: %1$s</string>
+    <string name="resume_trip_prompt">An unfinished trip was found. Resume it?</string>
+    <string name="resume">Resume</string>
+    <string name="discard">Finish it</string>
+
+    <!-- Settings -->
+    <string name="settings_heading_source">Heading source</string>
+    <string name="heading_rotation_vector">Rotation vector (default)</string>
+    <string name="heading_complementary">Gyro+magnetometer filter</string>
+    <string name="settings_red_mode">Red mode (night vision)</string>
+    <string name="settings_reset_drift">Reset drift calibration</string>
+    <string name="settings_drift_reset_done">Drift calibration reset to default.</string>
+    <string name="settings_recalibrate_steps">Re-run step length calibration</string>
+    <string name="settings_calibration_test">Calibration test (known walk)</string>
+    <string name="settings_orientation_offset">Device orientation offset: %1$d°</string>
+    <string name="settings_orientation_help">If you habitually hold the phone at an angle to your walking direction, correct it here. 0° = phone points where you walk.</string>
+    <string name="settings_about">About</string>
+
+    <string name="notification_channel_tracking">Trip tracking</string>
+    <string name="notification_tracking_title">CataNav is tracking</string>
+    <string name="notification_tracking_text">%1$d steps — recording trip</string>
+</resources>

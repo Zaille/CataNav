@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark by default: tracking happens underground. -->
+    <style name="Theme.CataNav" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:colorBackground">@color/cn_background</item>
+        <item name="colorSurface">@color/cn_surface</item>
+        <item name="colorPrimary">@color/cn_primary</item>
+        <item name="colorOnPrimary">@color/cn_on_primary</item>
+        <item name="colorSecondary">@color/cn_accent</item>
+        <item name="android:textColorPrimary">@color/cn_text</item>
+        <item name="android:textColorSecondary">@color/cn_text_dim</item>
+        <item name="android:statusBarColor">@color/cn_background</item>
+        <item name="android:navigationBarColor">@color/cn_background</item>
+    </style>
+
+    <!-- Red mode: red-only tones for night vision preservation. -->
+    <style name="Theme.CataNav.Red">
+        <item name="android:colorBackground">@color/red_background</item>
+        <item name="colorSurface">@color/red_surface</item>
+        <item name="colorPrimary">@color/red_primary</item>
+        <item name="colorOnPrimary">@color/red_on_primary</item>
+        <item name="colorSecondary">@color/red_primary</item>
+        <item name="android:textColorPrimary">@color/red_text</item>
+        <item name="android:textColorSecondary">@color/red_text_dim</item>
+        <item name="android:statusBarColor">@color/red_background</item>
+        <item name="android:navigationBarColor">@color/red_background</item>
+    </style>
+</resources>

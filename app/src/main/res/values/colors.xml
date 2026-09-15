@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="cn_background">#101214</color>
+    <color name="cn_surface">#1B1E22</color>
+    <color name="cn_primary">#7FB4E6</color>
+    <color name="cn_on_primary">#0B0D0F</color>
+    <color name="cn_accent">#E6A23C</color>
+    <color name="cn_text">#E8EAED</color>
+    <color name="cn_text_dim">#9AA0A6</color>
+
+    <!-- Red mode palette (caving night-vision convention) -->
+    <color name="red_background">#0A0000</color>
+    <color name="red_surface">#1A0505</color>
+    <color name="red_primary">#CC2222</color>
+    <color name="red_on_primary">#1A0000</color>
+    <color name="red_text">#E05050</color>
+    <color name="red_text_dim">#803030</color>
+
+    <color name="marker_position">#4DA3FF</color>
+    <color name="marker_uncertainty">#334DA3FF</color>
+    <color name="trail_color">#66FFD54F</color>
+    <color name="retrace_color">#FF5252</color>
+    <color name="anchor_color">#69F0AE</color>
+</resources>

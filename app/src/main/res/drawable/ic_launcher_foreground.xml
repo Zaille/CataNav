@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Compass needle over a tunnel arch -->
+    <path
+        android:fillColor="#7FB4E6"
+        android:pathData="M54,20 L62,54 L54,48 L46,54 Z" />
+    <path
+        android:fillColor="#E6A23C"
+        android:pathData="M54,88 L46,54 L54,60 L62,54 Z" />
+    <path
+        android:strokeColor="#9AA0A6"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:pathData="M30,84 L30,60 A24,24 0 0 1 78,60 L78,84" />
+</vector>
