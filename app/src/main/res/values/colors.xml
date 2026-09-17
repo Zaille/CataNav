@@ -18,7 +18,7 @@
 
     <color name="marker_position">#4DA3FF</color>
     <color name="marker_uncertainty">#334DA3FF</color>
-    <color name="trail_color">#66FFD54F</color>
+    <color name="trail_color">#FF9800</color>
     <color name="retrace_color">#FF5252</color>
-    <color name="anchor_color">#69F0AE</color>
+    <color name="anchor_color">#00FFB9</color>
 </resources>

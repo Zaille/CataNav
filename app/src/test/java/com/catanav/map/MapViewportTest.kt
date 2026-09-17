@@ -87,12 +87,12 @@ class MapViewportTest {
     }
 
     @Test
-    fun clampScale_boundsBetweenFitAndNative() {
+    fun clampScale_boundsBetweenFitAndMaxScale() {
         val v = MapViewport(7000, 7000)
         val fit = v.fitScale(1080, 1920)
         assertEquals(fit, v.clampScale(0.0001, 1080, 1920), 1e-12)
-        assertEquals(1.0, v.clampScale(50.0, 1080, 1920), 1e-12)
-        val mid = (fit + 1.0) / 2
+        assertEquals(MapViewport.MAX_SCALE, v.clampScale(50.0, 1080, 1920), 1e-12)
+        val mid = (fit + MapViewport.MAX_SCALE) / 2
         assertEquals(mid, v.clampScale(mid, 1080, 1920), 1e-12)
     }
 

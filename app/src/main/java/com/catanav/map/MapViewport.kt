@@ -101,12 +101,12 @@ class MapViewport(
         min(viewW.toDouble() / imageWidth, viewH.toDouble() / imageHeight)
 
     /**
-     * Clamp [candidate] between fit-to-screen and native resolution (scale 1.0).
-     * If the view is larger than the image, native resolution is the minimum instead.
+     * Clamp [candidate] between fit-to-screen and maximum zoom ([MAX_SCALE]).
+     * If the view is larger than the image, maximum zoom is the minimum instead.
      */
     fun clampScale(candidate: Double, viewW: Int, viewH: Int): Double {
-        val lo = min(fitScale(viewW, viewH), 1.0)
-        val hi = max(fitScale(viewW, viewH), 1.0)
+        val lo = min(fitScale(viewW, viewH), MAX_SCALE)
+        val hi = max(fitScale(viewW, viewH), MAX_SCALE)
         return min(max(candidate, lo), hi)
     }
 
@@ -133,6 +133,8 @@ class MapViewport(
     }
 
     companion object {
+        const val MAX_SCALE: Double = 5.0
+
         /**
          * Largest power-of-two BitmapFactory sample size that still decodes at least
          * one image pixel per screen pixel at the given [scale] (screen px per image px).

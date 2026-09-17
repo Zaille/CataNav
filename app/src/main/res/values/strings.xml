@@ -3,6 +3,7 @@
     <string name="app_name">CataNav</string>
 
     <string name="title_maps">Maps</string>
+    <string name="title_trips">Trips</string>
     <string name="title_calibration">Step calibration</string>
     <string name="title_calibrate_map">Calibrate map</string>
     <string name="title_calibration_test">Calibration test</string>

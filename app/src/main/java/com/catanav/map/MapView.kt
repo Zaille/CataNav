@@ -1,6 +1,8 @@
 package com.catanav.map
 
 import android.content.Context
+import androidx.core.content.ContextCompat
+import com.catanav.R
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.BitmapRegionDecoder
@@ -32,7 +34,7 @@ import kotlin.math.hypot
  * 7000x7000 plate is never in memory; a heavily subsampled overview is kept as the
  * fallback layer while panning).
  *
- * Gestures: one-finger pan, pinch zoom (clamped fit-to-screen..native), two-finger
+ * Gestures: one-finger pan, pinch zoom (clamped fit-to-screen..max zoom), two-finger
  * rotation. Rotation is VIEW-ONLY — all data stays in north-up image pixel space; the
  * overlay (marker / trail / uncertainty) shares this view's transform matrix.
  */
@@ -163,7 +165,7 @@ class MapView @JvmOverloads constructor(
     // ---- paints -----------------------------------------------------------------
     private val bitmapPaint = Paint(Paint.FILTER_BITMAP_FLAG)
     private val trailPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE; strokeWidth = 5f; strokeCap = Paint.Cap.ROUND
+        style = Paint.Style.STROKE; strokeWidth = 15f; strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
     }
     private val retracePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -185,13 +187,17 @@ class MapView @JvmOverloads constructor(
 
     private fun applyPalette() {
         if (redMode) {
-            trailPaint.color = 0x66CC4444.toInt()
-            retracePaint.color = 0xFFE05050.toInt()
-            uncertaintyPaint.color = 0x33CC2222
-            markerPaint.color = 0xFFCC2222.toInt()
-            anchorPaint.color = 0xFF803030.toInt()
-            anchorLabelPaint.color = 0xFFE05050.toInt()
-            crosshairPaint.color = 0xFFE05050.toInt()
+            val redPrimary = ContextCompat.getColor(context, R.color.red_primary)
+            val redText = ContextCompat.getColor(context, R.color.red_text)
+            val redTextDim = ContextCompat.getColor(context, R.color.red_text_dim)
+
+            trailPaint.color = (redPrimary and 0x00FFFFFF) or (0x66 shl 24)
+            retracePaint.color = redText
+            uncertaintyPaint.color = (redPrimary and 0x00FFFFFF) or (0x33 shl 24)
+            markerPaint.color = redPrimary
+            anchorPaint.color = redTextDim
+            anchorLabelPaint.color = redText
+            crosshairPaint.color = redText
             dimPaint.colorFilter = android.graphics.ColorMatrixColorFilter(
                 floatArrayOf(
                     0.5f, 0.3f, 0.1f, 0f, 0f,
@@ -201,13 +207,13 @@ class MapView @JvmOverloads constructor(
                 ),
             )
         } else {
-            trailPaint.color = 0x66FFD54F
-            retracePaint.color = 0xFFFF5252.toInt()
-            uncertaintyPaint.color = 0x334DA3FF
-            markerPaint.color = 0xFF4DA3FF.toInt()
-            anchorPaint.color = 0xFF69F0AE.toInt()
-            anchorLabelPaint.color = 0xFF69F0AE.toInt()
-            crosshairPaint.color = 0xFFFFAB40.toInt()
+            trailPaint.color = ContextCompat.getColor(context, R.color.trail_color)
+            retracePaint.color = ContextCompat.getColor(context, R.color.retrace_color)
+            uncertaintyPaint.color = ContextCompat.getColor(context, R.color.marker_uncertainty)
+            markerPaint.color = ContextCompat.getColor(context, R.color.marker_position)
+            anchorPaint.color = ContextCompat.getColor(context, R.color.anchor_color)
+            anchorLabelPaint.color = ContextCompat.getColor(context, R.color.anchor_color)
+            crosshairPaint.color = ContextCompat.getColor(context, R.color.cn_accent)
             dimPaint.colorFilter = null
         }
     }

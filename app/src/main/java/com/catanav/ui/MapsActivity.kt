@@ -3,6 +3,7 @@ package com.catanav.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
@@ -17,24 +18,34 @@ import com.catanav.CataNavApp
 import com.catanav.R
 import com.catanav.data.MapDefinitionEntity
 import com.catanav.data.MapImporter
+import com.catanav.data.TripEntity
 import com.catanav.databinding.ActivityMapsBinding
 import com.catanav.databinding.ItemMapBinding
+import com.catanav.databinding.ItemTripBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
- * Home for map management: every stored map with its calibration status and trip
- * count; import (SAF), rename, recalibrate (via the version model), delete.
+ * Home for map management and trip history: every stored map with its calibration
+ * status and trip count; trip list overlayable on map; import (SAF), rename,
+ * recalibrate (via the version model), delete.
  */
 class MapsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMapsBinding
     private val locator get() = CataNavApp.instance.locator
-    private val adapter = MapAdapter(
+    private val mapAdapter = MapAdapter(
         onClick = { row -> openMap(row) },
         onLongClick = { row -> showActions(row) },
+    )
+    private val tripAdapter = TripAdapter(
+        onClick = { trip -> openTrip(trip) },
     )
 
     data class MapRow(
@@ -74,7 +85,20 @@ class MapsActivity : AppCompatActivity() {
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.mapList.layoutManager = LinearLayoutManager(this)
-        binding.mapList.adapter = adapter
+        binding.mapList.adapter = mapAdapter
+
+        binding.tripList.layoutManager = LinearLayoutManager(this)
+        binding.tripList.adapter = tripAdapter
+
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                updateTabVisibility(tab?.position ?: 0)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+        updateTabVisibility(binding.tabLayout.selectedTabPosition)
 
         binding.btnImport.setOnClickListener {
             importLauncher.launch(arrayOf("image/*"))
@@ -85,18 +109,44 @@ class MapsActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                locator.mapRepository.maps().collect { maps ->
-                    val rows = maps.map { m ->
-                        MapRow(
-                            map = m,
-                            calibrated = m.activeVersionId != null,
-                            tripCount = locator.repository.tripCountForMap(m.id),
-                        )
+                launch {
+                    locator.mapRepository.maps().collect { maps ->
+                        val rows = maps.map { m ->
+                            MapRow(
+                                map = m,
+                                calibrated = m.activeVersionId != null,
+                                tripCount = locator.repository.tripCountForMap(m.id),
+                            )
+                        }
+                        mapAdapter.submit(rows)
                     }
-                    adapter.submit(rows)
+                }
+                launch {
+                    locator.repository.trips().collect { trips ->
+                        tripAdapter.submit(trips)
+                    }
                 }
             }
         }
+    }
+
+    private fun updateTabVisibility(position: Int) {
+        if (position == 1) {
+            binding.mapList.visibility = View.GONE
+            binding.tripList.visibility = View.VISIBLE
+            binding.btnImport.visibility = View.GONE
+        } else {
+            binding.mapList.visibility = View.VISIBLE
+            binding.tripList.visibility = View.GONE
+            binding.btnImport.visibility = View.VISIBLE
+        }
+    }
+
+    private fun openTrip(trip: TripEntity) {
+        startActivity(
+            Intent(this, TripDetailActivity::class.java)
+                .putExtra(TripDetailActivity.EXTRA_TRIP_ID, trip.id),
+        )
     }
 
     private fun openMap(row: MapRow) {
@@ -169,7 +219,7 @@ class MapsActivity : AppCompatActivity() {
                 onName(name)
             }
             .show()
-    }
+        }
 
     private class MapAdapter(
         private val onClick: (MapRow) -> Unit,
@@ -206,6 +256,40 @@ class MapsActivity : AppCompatActivity() {
             )
             holder.binding.root.setOnClickListener { onClick(row) }
             holder.binding.root.setOnLongClickListener { onLongClick(row); true }
+        }
+    }
+
+    private class TripAdapter(
+        private val onClick: (TripEntity) -> Unit,
+    ) : RecyclerView.Adapter<TripAdapter.Holder>() {
+
+        private val items = mutableListOf<TripEntity>()
+        private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ROOT)
+
+        fun submit(trips: List<TripEntity>) {
+            items.clear()
+            items.addAll(trips)
+            notifyDataSetChanged()
+        }
+
+        class Holder(val binding: ItemTripBinding) : RecyclerView.ViewHolder(binding.root)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder =
+            Holder(ItemTripBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+
+        override fun getItemCount(): Int = items.size
+
+        override fun onBindViewHolder(holder: Holder, position: Int) {
+            val trip = items[position]
+            holder.binding.tripName.text = trip.name.ifBlank { "Trip #${trip.id}" }
+            val status = if (trip.endTime == null) {
+                "in progress / interrupted"
+            } else {
+                val minutes = (trip.endTime - trip.startTime) / 60_000
+                "${dateFormat.format(Date(trip.startTime))} — $minutes min"
+            }
+            holder.binding.tripMeta.text = status
+            holder.binding.root.setOnClickListener { onClick(trip) }
         }
     }
 }
