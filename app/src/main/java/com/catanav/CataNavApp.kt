@@ -6,7 +6,6 @@ import com.catanav.data.MapRepository
 import com.catanav.data.TripRepository
 import com.catanav.settings.SettingsStore
 import com.catanav.trip.TripSession
-import kotlinx.coroutines.launch
 
 /** Tiny hand-rolled service locator — one shared object graph for UI and Service. */
 class ServiceLocator(app: Application) {
@@ -25,21 +24,9 @@ class CataNavApp : Application() {
 
     val locator: ServiceLocator by lazy { ServiceLocator(this) }
 
-    private val appScope = kotlinx.coroutines.CoroutineScope(
-        kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.IO,
-    )
-
     override fun onCreate() {
         super.onCreate()
         instance = this
-        appScope.launch {
-            // One-time initializer: the Catacombs reference map as seed DATA.
-            try {
-                com.catanav.data.CatacombsSeeder.seedIfNeeded(this@CataNavApp, locator.mapRepository)
-            } catch (_: Exception) {
-                // Seeding is a convenience; a failure must never block the app.
-            }
-        }
     }
 
     companion object {

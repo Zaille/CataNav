@@ -12,8 +12,7 @@ import java.util.zip.Inflater
 /**
  * Validates the streaming PNG encoder at the format level: signature, IHDR fields,
  * per-chunk CRCs, and a full inflate of the IDAT stream back to the exact RGB rows
- * that were written (filter byte 0 per row). This is the same byte stream
- * BitmapRegionDecoder consumes on device for the generated placeholder.
+ * that were written (filter byte 0 per row).
  */
 class PngStreamWriterTest {
 

@@ -4,8 +4,7 @@ Native Android app for **GPS-free navigation on any calibrated map image**. Impo
 image of a physical space (cave map, floor plan, mine map, hiking map, scanned
 survey…), calibrate it (scale + north), and navigate on it with pedestrian dead
 reckoning (step detection + heading) corrected by **manual re-anchoring**. Zero GPS,
-zero network at runtime. The Paris Catacombs plate ships as the first preconfigured
-example — nothing in the code assumes it.
+zero network at runtime.
 
 > **Privacy:** all trip data (positions, timestamps, tracks, anchors, notes, history)
 > stays on device. The manifest contains **no** location permission and **no** network
@@ -61,11 +60,11 @@ com.catanav
 │                  anchor-to-anchor learning persisted in the device profile
 ├── data/          Room v2: MapDefinition → MapVersion → MapCalibration, named Anchors,
 │                  Trip(mapVersionId), TrackPoint(meters + uncertainty),
-│                  calibration-test history; MapImporter (SAF); CatacombsSeeder
+│                  calibration-test history; MapImporter (SAF)
 ├── map/           Rendering infra: MapView (BitmapRegionDecoder viewport decoding,
 │                  pan/zoom/view-only rotation, meter-based overlay API via the
 │                  transformer), MapViewport (pure px↔screen math), FileMapSource,
-│                  PlaceholderMapGenerator + PngStreamWriter (streaming, O(row) memory)
+│                  PngStreamWriter (streaming, O(row) memory)
 ├── settings/      DataStore device profile: step length, orientation offset,
 │                  drift calibration, heading source, red mode
 └── export/        CsvExporter (canonical, metric authoritative), GeoRef (geographic
@@ -76,8 +75,7 @@ com.catanav
 
 - **No full-bitmap decode, at any image size.** Only the visible viewport (+25 %
   margin) is decoded at a zoom-matched sample size; imports record dimensions with a
-  bounds-only decode; even the generated placeholder streams through a row-at-a-time
-  PNG encoder.
+  bounds-only decode.
 - **Autosave per point; crash-resume.** Every TrackPoint is queued to Room as
   generated; a trip with `endTime NULL` is offered for resume on launch, restored on
   its own map version with an honestly-sized uncertainty circle.
@@ -111,15 +109,6 @@ com.catanav
    user/device, optionally set the **orientation offset** (Settings) if you hold the
    phone at an angle, and validate with the **Calibration test** screen (walk a known
    distance, see the % error, history stored).
-
-### The Catacombs seed
-
-Seeded on first launch as data (map + version + calibration: 7000×7000 px, 231 px =
-100 m ⇒ 0.433 m/px, north-up). Drop the real plate at
-`app/src/main/assets/catacombs_map.jpg` before building to use it; otherwise a
-full-size placeholder grid is generated. Caveat preserved in code: the plate is a
-stitched historical composite — average scale, not survey-grade; re-anchoring exists to
-bound that error.
 
 ## CSV export (canonical)
 

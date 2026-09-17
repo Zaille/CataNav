@@ -43,8 +43,7 @@ import kotlin.math.hypot
 
 /**
  * Navigation screen — works on ANY calibrated map version (passed by MapsActivity, or
- * resolved from the running session / first calibrated map). Nothing here assumes the
- * Catacombs plate.
+ * resolved from the running session / first calibrated map).
  */
 class MainActivity : AppCompatActivity() {
 

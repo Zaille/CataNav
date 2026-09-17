@@ -11,7 +11,7 @@ class CalibrationMathTest {
 
     @Test
     fun metersPerPixel_derivation() {
-        // 231 px apart, 100 m real -> 0.4329... m/px (the Catacombs measurement).
+        // 231 px apart, 100 m real -> 0.4329... m/px (e.g. cave survey scale).
         val mpp = CalibrationMath.metersPerPixel(
             ImagePoint(1000.0, 1000.0), ImagePoint(1231.0, 1000.0), 100.0,
         )

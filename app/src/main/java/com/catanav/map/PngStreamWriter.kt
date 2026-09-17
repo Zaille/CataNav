@@ -9,9 +9,9 @@ import java.util.zip.Deflater
  * Minimal streaming PNG encoder (8-bit truecolor RGB, no interlace).
  *
  * Exists because Android has no streaming image encoder, and hard-constraint #3 forbids
- * ever materializing the full 7000x7000 map in memory — including while GENERATING the
- * dev placeholder. Rows are fed top-to-bottom and deflated incrementally; memory use is
- * O(row), not O(image). Pure JVM (java.util.zip), so it is unit-testable off-device.
+ * ever materializing full maps in memory. Rows are fed top-to-bottom and deflated
+ * incrementally; memory use is O(row), not O(image). Pure JVM (java.util.zip), so it
+ * is unit-testable off-device.
  */
 class PngStreamWriter(
     out: OutputStream,
