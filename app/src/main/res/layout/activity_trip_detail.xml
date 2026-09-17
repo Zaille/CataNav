@@ -43,19 +43,13 @@
             android:layout_marginTop="4dp"
             android:text="@android:string/ok" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btnExportCsv"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnExportCsv"
-                style="@style/Widget.Material3.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/export_csv" />
-        </LinearLayout>
+            android:text="@string/export_csv" />
 
         <Button
             android:id="@+id/btnDelete"

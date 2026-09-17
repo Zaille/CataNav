@@ -17,7 +17,9 @@ import com.catanav.export.CsvExporter
 import com.catanav.map.FileMapSource
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.File
 
 /**
@@ -42,9 +44,12 @@ class TripDetailActivity : AppCompatActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val redMode = runBlocking { locator.settings.redMode.first() }
+        if (redMode) setTheme(R.style.Theme_CataNav_Red)
         super.onCreate(savedInstanceState)
         binding = ActivityTripDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.detailMap.redMode = redMode
 
         val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -1)
         lifecycleScope.launch { loadTrip(tripId) }

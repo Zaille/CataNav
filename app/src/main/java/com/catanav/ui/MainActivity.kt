@@ -39,6 +39,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.hypot
 
 /**
  * Navigation screen — works on ANY calibrated map version (passed by MapsActivity, or
@@ -67,6 +68,9 @@ class MainActivity : AppCompatActivity() {
     private var redMode = false
     private var lastHeadingReliable = true
     private var centeredOnce = false
+    private var isMeasuring = false
+    private var measurePointA: Pair<Double, Double>? = null
+    private var measurePointB: Pair<Double, Double>? = null
 
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
@@ -87,7 +91,24 @@ class MainActivity : AppCompatActivity() {
         binding.mapView.redMode = redMode
 
         binding.mapView.onMapTap = { x, y ->
-            if (mode != Mode.NORMAL) {
+            if (isMeasuring) {
+                val bound = boundMap
+                if (bound != null) {
+                    if (measurePointA == null) {
+                        measurePointA = x to y
+                        measurePointB = null
+                        binding.mapView.measurePoints = listOf(x to y)
+                        binding.measureResult.text = getString(R.string.measure_pick_second)
+                    } else if (measurePointB == null) {
+                        val a = measurePointA!!
+                        val distPx = hypot(x - a.first, y - a.second)
+                        val distMeters = distPx * bound.calibration.metersPerPixel
+                        val resultStr = getString(R.string.measure_result, distMeters)
+                        Toast.makeText(this@MainActivity, resultStr, Toast.LENGTH_SHORT).show()
+                        exitMeasureMode()
+                    }
+                }
+            } else if (mode != Mode.NORMAL) {
                 pendingAnchor = x to y
                 pendingAnchorName = null
                 binding.mapView.pendingAnchor = x to y
@@ -350,7 +371,28 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    private fun startMeasureDistance() {
+        if (mode != Mode.NORMAL) {
+            exitAnchorMode()
+        }
+        isMeasuring = true
+        measurePointA = null
+        measurePointB = null
+        binding.mapView.measurePoints = emptyList()
+        binding.measureResult.visibility = View.VISIBLE
+        binding.measureResult.text = getString(R.string.measure_pick_first)
+    }
+
+    private fun exitMeasureMode() {
+        isMeasuring = false
+        measurePointA = null
+        measurePointB = null
+        binding.mapView.measurePoints = emptyList()
+        binding.measureResult.visibility = View.GONE
+    }
+
     private fun enterAnchorMode(m: Mode) {
+        exitMeasureMode()
         mode = m
         pendingAnchor = null
         pendingAnchorName = null
@@ -542,6 +584,7 @@ class MainActivity : AppCompatActivity() {
         val items = arrayOf(
             getString(R.string.title_maps),
             getString(R.string.title_history),
+            getString(R.string.btn_measure_distance),
             getString(R.string.title_anchors),
             getString(R.string.title_calibration),
             getString(R.string.title_settings),
@@ -551,9 +594,10 @@ class MainActivity : AppCompatActivity() {
                 when (which) {
                     0 -> startActivity(Intent(this, MapsActivity::class.java))
                     1 -> startActivity(Intent(this, HistoryActivity::class.java))
-                    2 -> showAnchorHistory()
-                    3 -> startActivity(Intent(this, StepCalibrationActivity::class.java))
-                    4 -> startActivity(Intent(this, SettingsActivity::class.java))
+                    2 -> startMeasureDistance()
+                    3 -> showAnchorHistory()
+                    4 -> startActivity(Intent(this, StepCalibrationActivity::class.java))
+                    5 -> startActivity(Intent(this, SettingsActivity::class.java))
                 }
             }
             .show()

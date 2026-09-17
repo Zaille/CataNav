@@ -94,6 +94,12 @@
 
     <!-- History / detail -->
     <string name="export_csv">Export CSV</string>
+    <string name="btn_measure_distance">Measure distance</string>
+    <string name="measure_distance">Measure distance</string>
+    <string name="measure_pick_first">Tap first point on the map (point A)</string>
+    <string name="measure_pick_second">Point A set. Tap second point on the map (point B)</string>
+    <string name="measure_result">Distance: %1$.1f m</string>
+    <string name="measure_clear">Clear measurement</string>
     <string name="delete_trip">Delete trip</string>
     <string name="delete_track_only">Delete track points only</string>
     <string name="delete_all">Delete trip and track</string>

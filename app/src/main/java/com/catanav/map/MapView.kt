@@ -83,6 +83,8 @@ class MapView @JvmOverloads constructor(
     var uncertaintyRadiusPx: Double = 0.0
     var pendingAnchor: Pair<Double, Double>? = null
         set(v) { field = v; invalidate() }
+    var measurePoints: List<Pair<Double, Double>> = emptyList()
+        set(v) { field = v; invalidate() }
     var crosshairMode: Boolean = false
         set(v) { field = v; invalidate() }
     var redMode: Boolean = false
@@ -179,6 +181,13 @@ class MapView @JvmOverloads constructor(
     private val crosshairPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE; strokeWidth = 3f
     }
+    private val measureLinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE; strokeWidth = 6f; strokeCap = Paint.Cap.ROUND
+    }
+    private val measurePointPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val measureTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textSize = 32f; isFakeBoldText = true
+    }
     private val dimPaint = Paint()
 
     init {
@@ -198,6 +207,9 @@ class MapView @JvmOverloads constructor(
             anchorPaint.color = redTextDim
             anchorLabelPaint.color = redText
             crosshairPaint.color = redText
+            measureLinePaint.color = redPrimary
+            measurePointPaint.color = redPrimary
+            measureTextPaint.color = redText
             dimPaint.colorFilter = android.graphics.ColorMatrixColorFilter(
                 floatArrayOf(
                     0.5f, 0.3f, 0.1f, 0f, 0f,
@@ -207,13 +219,17 @@ class MapView @JvmOverloads constructor(
                 ),
             )
         } else {
+            val cnAccent = ContextCompat.getColor(context, R.color.cn_accent)
             trailPaint.color = ContextCompat.getColor(context, R.color.trail_color)
             retracePaint.color = ContextCompat.getColor(context, R.color.retrace_color)
             uncertaintyPaint.color = ContextCompat.getColor(context, R.color.marker_uncertainty)
             markerPaint.color = ContextCompat.getColor(context, R.color.marker_position)
             anchorPaint.color = ContextCompat.getColor(context, R.color.anchor_color)
             anchorLabelPaint.color = ContextCompat.getColor(context, R.color.anchor_color)
-            crosshairPaint.color = ContextCompat.getColor(context, R.color.cn_accent)
+            crosshairPaint.color = cnAccent
+            measureLinePaint.color = cnAccent
+            measurePointPaint.color = cnAccent
+            measureTextPaint.color = cnAccent
             dimPaint.colorFilter = null
         }
     }
@@ -423,7 +439,23 @@ class MapView @JvmOverloads constructor(
             canvas.drawLine(p[0], p[1] - 40f, p[0], p[1] + 40f, crosshairPaint)
         }
 
-        if (crosshairMode && pendingAnchor == null) {
+        if (measurePoints.isNotEmpty()) {
+            val p0 = mapPoint(measurePoints[0].first, measurePoints[0].second)
+            canvas.drawCircle(p0[0], p0[1], 10f, measurePointPaint)
+            canvas.drawCircle(p0[0], p0[1], 20f, crosshairPaint)
+            canvas.drawText("A", p0[0] + 16f, p0[1] - 16f, measureTextPaint)
+
+            if (measurePoints.size >= 2) {
+                val p1 = mapPoint(measurePoints[1].first, measurePoints[1].second)
+                canvas.drawCircle(p1[0], p1[1], 10f, measurePointPaint)
+                canvas.drawCircle(p1[0], p1[1], 20f, crosshairPaint)
+                canvas.drawText("B", p1[0] + 16f, p1[1] - 16f, measureTextPaint)
+
+                canvas.drawLine(p0[0], p0[1], p1[0], p1[1], measureLinePaint)
+            }
+        }
+
+        if (crosshairMode && pendingAnchor == null && measurePoints.isEmpty()) {
             // Passive hint crosshair at screen center until the user taps.
             val cx = width / 2f; val cy = height / 2f
             canvas.drawLine(cx - 30f, cy, cx + 30f, cy, crosshairPaint)

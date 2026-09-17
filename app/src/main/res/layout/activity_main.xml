@@ -53,6 +53,19 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
+        android:id="@+id/measureResult"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#AA000000"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/buttonRow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
         android:id="@+id/anchorHint"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
