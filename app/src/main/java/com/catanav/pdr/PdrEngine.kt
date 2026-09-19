@@ -28,6 +28,9 @@ class PdrEngine(
         val distanceSinceAnchorM: Double,
         val totalSteps: Int,
         val isAnchor: Boolean,
+        /** Where the current dead-reckoning leg started (last anchor), meters. */
+        val anchorXMeters: Double = xMeters,
+        val anchorYMeters: Double = yMeters,
     )
 
     private val _position = MutableStateFlow<Position?>(null)
@@ -50,6 +53,8 @@ class PdrEngine(
             distanceSinceAnchorM = 0.0,
             totalSteps = prev?.totalSteps ?: 0,
             isAnchor = true,
+            anchorXMeters = xMeters,
+            anchorYMeters = yMeters,
         )
     }
 
@@ -70,6 +75,8 @@ class PdrEngine(
             distanceSinceAnchorM = prev.distanceSinceAnchorM + stepLengthMeters,
             totalSteps = prev.totalSteps + 1,
             isAnchor = false,
+            anchorXMeters = prev.anchorXMeters,
+            anchorYMeters = prev.anchorYMeters,
         )
     }
 
@@ -91,6 +98,8 @@ class PdrEngine(
         headingDeg: Double,
         distanceSinceAnchorM: Double,
         totalSteps: Int,
+        anchorXMeters: Double = xMeters,
+        anchorYMeters: Double = yMeters,
     ) {
         _position.value = Position(
             xMeters = xMeters,
@@ -99,6 +108,8 @@ class PdrEngine(
             distanceSinceAnchorM = distanceSinceAnchorM,
             totalSteps = totalSteps,
             isAnchor = false,
+            anchorXMeters = anchorXMeters,
+            anchorYMeters = anchorYMeters,
         )
     }
 

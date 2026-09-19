@@ -464,7 +464,14 @@ class MainActivity : AppCompatActivity() {
                 session.startTrip(name, meters, headingDeg, anchorName)
                 startTrackingService()
             } else {
-                session.reanchor(meters, headingDeg, anchorName)
+                val adjustment = session.reanchor(meters, headingDeg, anchorName)
+                if (adjustment != null && kotlin.math.abs(adjustment.afterM - adjustment.beforeM) >= 0.005) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.reanchor_stride_adjusted, adjustment.beforeM, adjustment.afterM),
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
             }
             boundMap?.let { namedAnchors = locator.mapRepository.namedAnchors(it.version.id) }
             exitAnchorMode()

@@ -57,7 +57,9 @@ com.catanav
 │                  RotationVectorHeading / ComplementaryFilterHeading, PdrEngine (meters),
 │                  SensorHub (Android glue, startup capability check)
 ├── anchor/        DriftCalibrator: radius = distance_since_anchor × drift_rate,
-│                  anchor-to-anchor learning persisted in the device profile
+│                  anchor-to-anchor learning persisted in the device profile;
+│                  StrideCalibrator: along-track part of a straight re-anchor leg
+│                  nudges the persisted step length toward the user's real stride
 ├── data/          Room v2: MapDefinition → MapVersion → MapCalibration, named Anchors,
 │                  Trip(mapVersionId), TrackPoint(meters + uncertainty),
 │                  calibration-test history; MapImporter (SAF)

@@ -15,11 +15,29 @@ class RotationVectorHeading : HeadingEstimator {
         private set
 
     @Volatile
-    override var confidence: HeadingConfidence = HeadingConfidence.HIGH
-        private set
+    private var accuracyFlagConfidence: HeadingConfidence = HeadingConfidence.HIGH
+
+    @Volatile
+    private var estimatedAccuracyConfidence: HeadingConfidence = HeadingConfidence.HIGH
+
+    /**
+     * Worst of the two signals the sensor gives: the rare onAccuracyChanged flag and
+     * the per-event estimated heading accuracy (values[4], radians, -1 if unknown).
+     * Indoors the flag almost never changes, so without values[4] the UI would keep
+     * claiming high confidence through any amount of magnetic interference.
+     */
+    override val confidence: HeadingConfidence
+        get() = maxOf(accuracyFlagConfidence, estimatedAccuracyConfidence)
 
     /** [values] is the raw TYPE_ROTATION_VECTOR event array: x, y, z[, w[, accuracy]]. */
     fun onRotationVector(values: FloatArray) {
+        if (values.size >= 5) {
+            val accRad = values[4]
+            if (accRad >= 0f && !accRad.isNaN()) {
+                estimatedAccuracyConfidence =
+                    confidenceFromHeadingAccuracyDeg(Math.toDegrees(accRad.toDouble()))
+            }
+        }
         val q1 = values[0].toDouble() // x
         val q2 = values[1].toDouble() // y
         val q3 = values[2].toDouble() // z
@@ -42,13 +60,24 @@ class RotationVectorHeading : HeadingEstimator {
         headingDeg = HeadingEstimator.normalize(Math.toDegrees(azimuthRad))
     }
 
-    /** Fed from onAccuracyChanged / the event's accuracy field. */
+    /** Fed from onAccuracyChanged. */
     fun onAccuracyChanged(sensorStatusAccuracy: Int) {
-        confidence = HeadingEstimator.confidenceFromAccuracy(sensorStatusAccuracy)
+        accuracyFlagConfidence = HeadingEstimator.confidenceFromAccuracy(sensorStatusAccuracy)
     }
 
     override fun reset() {
         headingDeg = Double.NaN
-        confidence = HeadingConfidence.HIGH
+        accuracyFlagConfidence = HeadingConfidence.HIGH
+        estimatedAccuracyConfidence = HeadingConfidence.HIGH
+    }
+
+    companion object {
+        /** Estimated 1-sigma heading error (deg) to a confidence grade. */
+        fun confidenceFromHeadingAccuracyDeg(deg: Double): HeadingConfidence = when {
+            deg < 15.0 -> HeadingConfidence.HIGH
+            deg < 30.0 -> HeadingConfidence.MEDIUM
+            deg < 60.0 -> HeadingConfidence.LOW
+            else -> HeadingConfidence.UNRELIABLE
+        }
     }
 }

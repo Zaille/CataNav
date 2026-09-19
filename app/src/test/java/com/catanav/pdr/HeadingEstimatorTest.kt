@@ -194,6 +194,26 @@ class HeadingEstimatorTest {
     }
 
     @Test
+    fun rotationVector_estimatedAccuracyDegradesConfidence() {
+        val h = RotationVectorHeading()
+        // values[4] = estimated heading accuracy in radians; 0.6 rad ~ 34 deg => LOW.
+        h.onRotationVector(floatArrayOf(0f, 0f, 0f, 1f, 0.6f))
+        assertEquals(HeadingConfidence.LOW, h.confidence)
+        assertFalse(h.isReliable)
+        // Back to a tight estimate (0.1 rad ~ 6 deg) => HIGH again.
+        h.onRotationVector(floatArrayOf(0f, 0f, 0f, 1f, 0.1f))
+        assertEquals(HeadingConfidence.HIGH, h.confidence)
+        // -1 means "unknown": keep the previous grade, do not degrade.
+        h.onRotationVector(floatArrayOf(0f, 0f, 0f, 1f, -1f))
+        assertEquals(HeadingConfidence.HIGH, h.confidence)
+        // The worse of the accuracy flag and the estimate wins.
+        h.onAccuracyChanged(2)
+        assertEquals(HeadingConfidence.MEDIUM, h.confidence)
+        h.onRotationVector(floatArrayOf(0f, 0f, 0f, 1f, 1.2f)) // ~69 deg
+        assertEquals(HeadingConfidence.UNRELIABLE, h.confidence)
+    }
+
+    @Test
     fun complementary_fieldMagnitudeOverridesAccuracy() {
         val h = ComplementaryFilterHeading()
         h.onMagnetometerAccuracyChanged(3)

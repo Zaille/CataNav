@@ -49,6 +49,7 @@
     <string name="start_anchor_hint">Tap your starting point on the map to begin the trip.</string>
     <string name="anchor_name_hint">Anchor name (optional — e.g. "Junction 14")</string>
     <string name="reanchor_tap_map">Tap position on map…</string>
+    <string name="reanchor_stride_adjusted">Step length adjusted from the re-anchor: %1$.2f m → %2$.2f m</string>
     <string name="nav_anchor_unnamed">unnamed anchor</string>
     <string name="nav_info_line">⚓ %1$s · %2$.0f m since anchor · ±%3$.1f m</string>
     <string name="no_anchors_yet">No anchors stored for this map yet.</string>

@@ -1,6 +1,5 @@
 package com.catanav.service
 
-import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,7 +8,6 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.hardware.SensorManager
 import android.os.BatteryManager
@@ -17,7 +15,6 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import com.catanav.CataNavApp
 import com.catanav.R
 import com.catanav.pdr.SensorHub
@@ -114,12 +111,8 @@ class TrackingService : Service() {
             sc.launch {
                 hub.health.collect { session.onSensorConfidence(it.headingConfidence) }
             }
-            val stepPermission = ContextCompat.checkSelfPermission(
-                this@TrackingService, Manifest.permission.ACTIVITY_RECOGNITION,
-            ) == PackageManager.PERMISSION_GRANTED
-            hub.start(stepPermission)
-            session.manualMode =
-                hub.capabilityFor(stepPermission) != SensorHub.Capability.FULL_PDR
+            hub.start()
+            session.manualMode = hub.capability != SensorHub.Capability.FULL_PDR
             sc.launch { hub.health.collect { sensorHealth.value = it } }
             sc.launch {
                 session.stepCount.collect { steps ->
