@@ -68,12 +68,17 @@ class SensorHub(
 
     val stepDetector = StepDetector()
 
-    /** stepPermissionGranted: ACTIVITY_RECOGNITION runtime state, checked by the caller. */
-    fun capabilityFor(stepPermissionGranted: Boolean): Capability = when {
-        headingEstimator == null -> Capability.NO_HEADING
-        linearAccel == null || !stepPermissionGranted -> Capability.MANUAL_MODE
-        else -> Capability.FULL_PDR
-    }
+    /**
+     * Step detection runs on TYPE_LINEAR_ACCELERATION, which needs no runtime
+     * permission (ACTIVITY_RECOGNITION only guards the hardware step counter, which
+     * is not used). A user who declines that permission still gets full PDR.
+     */
+    val capability: Capability
+        get() = when {
+            headingEstimator == null -> Capability.NO_HEADING
+            linearAccel == null -> Capability.MANUAL_MODE
+            else -> Capability.FULL_PDR
+        }
 
     private val _health = MutableStateFlow(
         Health(
@@ -93,11 +98,11 @@ class SensorHub(
     private var lastReportedHeading = Double.NaN
     private var running = false
 
-    fun start(stepPermissionGranted: Boolean) {
+    fun start() {
         if (running) return
         running = true
         _health.value = Health(
-            capability = capabilityFor(stepPermissionGranted),
+            capability = capability,
             headingSourceUsed = activeSource,
             headingReliable = headingEstimator?.isReliable ?: false,
             headingConfidence = headingEstimator?.confidence ?: HeadingConfidence.UNRELIABLE,

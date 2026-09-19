@@ -1,6 +1,7 @@
 package com.catanav.trip
 
 import com.catanav.anchor.DriftCalibrator
+import com.catanav.anchor.StrideCalibrator
 import com.catanav.data.ActiveMap
 import com.catanav.data.AnchorEntity
 import com.catanav.data.MapRepository
@@ -50,6 +51,9 @@ class TripSession(
 
     var driftCalibrator = DriftCalibrator()
         private set
+
+    /** Learns the step length from straight re-anchor legs (see [reanchor]). */
+    private val strideCalibrator = StrideCalibrator()
 
     // ---- map binding -----------------------------------------------------------
 
@@ -258,6 +262,12 @@ class TripSession(
      * corrected, feeds the predicted-vs-tapped delta into the drift-rate running
      * average (persisted in the device profile), and — when the user names it —
      * stores a reusable named Anchor for this map version.
+     *
+     * When the leg since the previous anchor was walked roughly straight, the
+     * along-track part of the correction is a step-length measurement: the stride is
+     * nudged toward it ([StrideCalibrator]) and persisted, so repeated re-anchors that
+     * keep landing "a few meters further" converge on the user's real stride. Returns
+     * that adjustment (for the UI to surface) or null when the leg was not usable.
      * Heading is NOT auto-corrected; [headingDeg] only if the user confirmed a facing.
      */
     suspend fun reanchor(
@@ -265,10 +275,11 @@ class TripSession(
         headingDeg: Double? = null,
         anchorName: String? = null,
         anchorNotes: String? = null,
-    ) {
-        val id = _tripId.value ?: return
-        val bound = _boundMap.value ?: return
+    ): StrideCalibrator.Adjustment? {
+        val id = _tripId.value ?: return null
+        val bound = _boundMap.value ?: return null
         val predicted = engine.position.value
+        var adjustment: StrideCalibrator.Adjustment? = null
         if (predicted != null && predicted.distanceSinceAnchorM > 0) {
             val accepted = driftCalibrator.onReanchor(
                 predictedXM = predicted.xMeters,
@@ -278,6 +289,22 @@ class TripSession(
                 distanceWalkedM = predicted.distanceSinceAnchorM,
             )
             if (accepted) settings.saveDriftCalibrator(driftCalibrator)
+            if (!manualMode) {
+                adjustment = strideCalibrator.onReanchor(
+                    anchorXM = predicted.anchorXMeters,
+                    anchorYM = predicted.anchorYMeters,
+                    predictedXM = predicted.xMeters,
+                    predictedYM = predicted.yMeters,
+                    actualXM = tapped.xMeters,
+                    actualYM = tapped.yMeters,
+                    distanceWalkedM = predicted.distanceSinceAnchorM,
+                    currentStepLengthM = engine.stepLengthMeters,
+                )
+                if (adjustment != null) {
+                    engine.stepLengthMeters = adjustment.afterM
+                    settings.setStepLengthMeters(adjustment.afterM)
+                }
+            }
         }
         engine.anchor(tapped.xMeters, tapped.yMeters, headingDeg)
         unreliableDistanceM = 0.0
@@ -306,6 +333,7 @@ class TripSession(
                 ),
             )
         }
+        return adjustment
     }
 
     /**
@@ -341,12 +369,15 @@ class TripSession(
             )
         }
         val steps = points.count { it.source == PointSource.PDR }
+        val lastAnchor = points[maxOf(lastAnchorIdx, 0)]
         engine.restore(
             xMeters = last.xMeters,
             yMeters = last.yMeters,
             headingDeg = last.headingDeg ?: Double.NaN,
             distanceSinceAnchorM = distM,
             totalSteps = steps,
+            anchorXMeters = lastAnchor.xMeters,
+            anchorYMeters = lastAnchor.yMeters,
         )
         _stepCount.value = steps
     }
